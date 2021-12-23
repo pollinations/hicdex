@@ -27,7 +27,7 @@ services:
     volumes:
       - /foo/pg:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=dipdup
+      - POSTGRES_USER=postgres
       - POSTGRES_DB=dipdup
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
     healthcheck:
@@ -38,15 +38,15 @@ services:
 
   hasura:
     image: hasura/graphql-engine:v2.0.1
-    # ports:
-    #   - 8081:8080
+    ports:
+      - 6424:8080
     expose:
-      - 8080
+      - 6424
     depends_on:
       - db
     restart: always
     environment:
-      - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD:-changeme}@db:5432/dipdup
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-changeme}@db:5432/dipdup
       - HASURA_GRAPHQL_ENABLE_CONSOLE=true
       - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup, http-log, webhook-log, websocket-log, query-log
       - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
@@ -58,8 +58,8 @@ services:
       - "hasura"
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "6425:80"
+      - "6426:443"
     volumes:
       - ../hicdex-graphiql:/srv/api.hicdex.com
       - ./Caddyfile:/etc/caddy/Caddyfile
